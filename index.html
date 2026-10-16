@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#094d47">
+  <title>Kilometrówka, RM Nieruchomości</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="RM Nieruchomości" class="header-logo">
+      <div class="subtitle">Kilometrówka</div>
+    </div>
+    <div class="header-right">
+      <span class="wersja" data-wersja title="Wersja aplikacji"></span>
+      <button class="icon-btn" id="btn-ustawienia" hidden aria-label="Ustawienia">⚙</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <!-- LOGOWANIE -->
+  <section class="screen" id="ekran-logowanie" hidden>
+    <div class="card">
+      <div class="card-title">Zaloguj się</div>
+      <p class="muted">Ten sam e-mail i hasło co w aplikacji Zadania RM.</p>
+      <form id="form-logowanie">
+        <label>E-mail <input type="email" id="log-email" autocomplete="username" autocapitalize="off" required></label>
+        <label>Hasło <input type="password" id="log-haslo" autocomplete="current-password" required></label>
+        <button class="btn btn-main" type="submit">Zaloguj</button>
+        <div class="err" id="log-blad"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ZAKŁADKI -->
+  <nav class="tabs" id="tabs" hidden>
+    <button data-tab="nowy" class="on">➕ Przejazd</button>
+    <button data-tab="lista">📋 Przejazdy</button>
+    <button data-tab="raport">📄 PDF</button>
+  </nav>
+
+  <!-- NOWY PRZEJAZD -->
+  <section class="screen" id="ekran-nowy" hidden>
+    <div class="card">
+      <div class="row-between">
+        <div class="card-title" id="nowy-tytul">Nowy przejazd</div>
+        <button class="link" id="btn-anuluj-edycje" hidden>Anuluj edycję</button>
+      </div>
+      <label>Data <input type="date" id="f-data"></label>
+
+      <div class="trasa" id="trasa"></div>
+      <button class="btn btn-ghost" id="btn-dodaj-punkt">＋ Dodaj kolejny punkt</button>
+      <label class="check"><input type="checkbox" id="f-powrot" checked> Powrót do biura</label>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Cel wyjazdu</div>
+      <div class="chips" id="cele"></div>
+      <input type="text" id="f-cel" placeholder="np. prezentacja mieszkania, Hetmańska 10" maxlength="200">
+    </div>
+
+    <div class="card km-card">
+      <div class="km-row">
+        <div>
+          <div class="muted small">Kilometry</div>
+          <div class="km-input"><input type="number" id="f-km" inputmode="decimal" step="0.1" min="0.1" placeholder="0"> <span>km</span></div>
+          <div class="small muted" id="km-info">Wybierz punkty, policzę sama</div>
+        </div>
+        <div class="kwota">
+          <div class="muted small">Do zwrotu</div>
+          <div class="kwota-num" id="f-kwota">0,00 zł</div>
+          <div class="small muted" id="f-stawka-info">1,15 zł/km</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-main btn-big" id="btn-zapisz">Zapisz przejazd</button>
+  </section>
+
+  <!-- LISTA -->
+  <section class="screen" id="ekran-lista" hidden>
+    <div class="miesiac-bar">
+      <button class="icon-btn dark" data-mies="-1" aria-label="Poprzedni miesiąc">‹</button>
+      <div class="miesiac-nazwa" data-mies-nazwa></div>
+      <button class="icon-btn dark" data-mies="1" aria-label="Następny miesiąc">›</button>
+    </div>
+    <div class="osoby" data-osoby hidden></div>
+    <div class="suma" id="lista-suma"></div>
+    <div id="lista"></div>
+  </section>
+
+  <!-- RAPORT -->
+  <section class="screen" id="ekran-raport" hidden>
+    <div class="miesiac-bar">
+      <button class="icon-btn dark" data-mies="-1" aria-label="Poprzedni miesiąc">‹</button>
+      <div class="miesiac-nazwa" data-mies-nazwa></div>
+      <button class="icon-btn dark" data-mies="1" aria-label="Następny miesiąc">›</button>
+    </div>
+    <div class="osoby" data-osoby hidden></div>
+    <div class="card">
+      <div class="card-title">Ewidencja przebiegu pojazdu</div>
+      <div id="raport-podglad"></div>
+      <div class="err" id="raport-braki"></div>
+      <button class="btn btn-main btn-big" id="btn-pdf">📄 Pobierz PDF dla księgowej</button>
+      <button class="btn btn-ghost" id="btn-udostepnij" hidden>📤 Wyślij PDF (mail, WhatsApp)</button>
+    </div>
+  </section>
+
+  <!-- USTAWIENIA -->
+  <section class="screen" id="ekran-ustawienia" hidden>
+    <div class="card">
+      <div class="row-between">
+        <div class="card-title">Dane do ewidencji</div>
+        <button class="link" id="btn-zamknij-ust">Zamknij</button>
+      </div>
+      <div class="osoby" id="ust-osoby" hidden></div>
+      <p class="muted small">Te dane trafiają do nagłówka PDF. Wymaga ich ustawa o PIT (art. 23 ust. 7).</p>
+      <label>Imię i nazwisko <input type="text" id="u-imie" maxlength="80"></label>
+      <label>Adres zamieszkania <input type="text" id="u-adres" maxlength="150"></label>
+      <label>Samochód (marka, model) <input type="text" id="u-pojazd" maxlength="60" placeholder="np. Toyota Yaris"></label>
+      <div class="grid2">
+        <label>Nr rejestracyjny <input type="text" id="u-nrrej" maxlength="12" autocapitalize="characters"></label>
+        <label>Pojemność silnika (cm³) <input type="number" id="u-pojemnosc" inputmode="numeric" min="0" max="9000"></label>
+      </div>
+      <label>Stawka za 1 km (zł) <input type="number" id="u-stawka" inputmode="decimal" step="0.01" min="0" max="5"></label>
+      <div class="small warn" id="u-stawka-uwaga" hidden></div>
+      <label>Pracodawca (na PDF) <input type="text" id="u-pracodawca" maxlength="120"></label>
+      <label>Start i powrót tras (biuro) <input type="text" id="u-baza" maxlength="150"></label>
+      <div class="small muted" id="u-baza-info"></div>
+      <button class="btn btn-main" id="btn-zapisz-ust">Zapisz dane</button>
+      <hr>
+      <div class="small muted" id="ust-konto"></div>
+      <button class="btn btn-ghost" id="btn-wyloguj">Wyloguj</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="config.js?v=1"></script>
+<script src="vendor/supabase.js"></script>
+<script src="vendor/pdfmake.min.js" defer></script>
+<script src="vendor/vfs_fonts.js" defer></script>
+<script src="app.js?v=1" defer></script>
+</body>
+</html>
